@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+/* ===== Terminal text ===== */
+
+.terminal-text {
+    letter-spacing: 0.04em;
+    text-shadow:
+        0 0 1px rgba(0, 255, 200, 0.15),
+        0 0 2px rgba(255, 80, 180, 0.08);
+}
+
+/* ===== Alias output ===== */
+
+.terminal-output {
+    min-height: 2.5rem;
+    padding: 0.5rem;
+    border: 1px solid #d6d4cc;
+    background: #f0efe9;
+    font-size: 0.875rem;
+    position: relative;
+}
+
+/* cursor blink */
+.cursor {
+    display: inline-block;
+    width: 0.6ch;
+    height: 1em;
+    background: #111;
+    margin-left: 2px;
+    animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ===== Paper settle jitter ===== */
+
+.paper-settle {
+    animation: settle 180ms ease-out;
+}
+
+@keyframes settle {
+    0% {
+        transform: translateX(-1px);
+    }
+
+    50% {
+        transform: translateX(1px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+
+/* ===== Ripple fields ===== */
+
+/* ===== Pulsating anonymity rings ===== */
+
+.pulsar {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.6;
+    animation: pulse-ring 9s ease-in-out infinite;
+    mix-blend-mode: screen;
+}
+
+.pulsar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 4px solid currentColor;
+    opacity: 0.8;
+}
+
+.pulsar::after {
+    content: "";
+    position: absolute;
+    inset: 10%;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0.4;
+}
+
+/* Top-right ring */
+.pulsar-top-right {
+    top: -220px;
+    right: -220px;
+    color: rgba(0, 255, 200, 0.8);
+}
+
+/* Bottom-left ring */
+.pulsar-bottom-left {
+    bottom: -220px;
+    left: -220px;
+    color: rgba(248, 186, 50, 0.833);
+    animation-delay: 4.5s;
+}
+
+/* Pulse animation */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(0.9);
+        opacity: 0.9;
+    }
+}
+
+/* ===== Custom Utilities ===== */
+.bg-brand-gradient {
+    background: linear-gradient(192deg, rgba(12,130,247,1) 0%, rgba(87,199,133,1) 50%, rgba(237,221,83,1) 100%);
+}
+
+/* ===== Desktop Scroll Lock ===== */
+@media (min-width: 1024px) {
+    html:not(.scroll-enabled),
+    body:not(.scroll-enabled) {
+        overflow: hidden;
+    }
+}
+
+/* Scroll Toggle Override */
+.scroll-enabled {
+    overflow: auto !important;
+}
+
+/* ===== Strict Home Page Lock ===== */
+.home-lock {
+    overflow: hidden !important;
+    touch-action: none;
+}
