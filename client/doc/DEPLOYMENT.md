@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers deploying xMy to production. The application consists of:
+This guide covers deploying wsx to production. The application consists of:
 - **Frontend**: React SPA (Vite build)
 - **Backend**: Node.js or Go WebSocket server
 - **Storage**: Upstash Redis for message history
@@ -104,8 +104,8 @@ Connect your GitHub repository and select it.
 
 **Go Backend:**
 - Root directory: `backend-go`
-- Start command: `./xmy-server`
-- Build command: `go build -o xmy-server .`
+- Start command: `./wsx-server`
+- Build command: `go build -o wsx-server .`
 
 4. **Add Environment Variables**
 
@@ -160,8 +160,8 @@ Connect your GitHub repository.
 
 **Go Backend:**
 - Root directory: `backend-go`
-- Build command: `go build -o xmy-server .`
-- Start command: `./xmy-server`
+- Build command: `go build -o wsx-server .`
+- Start command: `./wsx-server`
 
 4. **Add Environment Variables**
 
@@ -304,21 +304,21 @@ WORKDIR /app
 COPY go.* ./
 RUN go mod download
 COPY . .
-RUN go build -o xmy-server .
+RUN go build -o wsx-server .
 
 FROM alpine:latest AS runner
 WORKDIR /app
-COPY --from=builder /app/xmy-server .
+COPY --from=builder /app/wsx-server .
 ENV PORT=8080
 EXPOSE 8080
-CMD ["./xmy-server"]
+CMD ["./wsx-server"]
 ```
 
 ### Build and Run
 
 ```bash
 # Build image
-docker build -t xmy-server .
+docker build -t wsx-server .
 
 # Run container
 docker run -p 8080:8080 \
@@ -327,7 +327,7 @@ docker run -p 8080:8080 \
   -e ENCRYPTION_KEY=your-key \
   -e UPSTASH_REDIS_REST_URL=your-url \
   -e UPSTASH_REDIS_REST_TOKEN=your-token \
-  xmy-server
+  wsx-server
 ```
 
 ## Environment Variables

@@ -1,5 +1,5 @@
 {
-  "name": "xmy-chat-app",
+  "name": "wsx-chat-app",
   "version": "1.0.0",
   "scripts": {
     "build": "cd client && npm run build",

@@ -196,9 +196,9 @@ function MapPage({ entry, theme }: { entry: MapEntry; theme: Theme }) {
   const dark = theme === "dark";
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 w-full">
       <h1 className={`mt-0 mb-4 text-3xl font-semibold tracking-tight sm:text-4xl ${dark ? "text-white" : "text-black"}`}>{entry.title}</h1>
-      <p className={`my-4 max-w-2xl leading-7 ${dark ? "text-white/75" : "text-black/75"}`}>{entry.description}</p>
+      <p className={`my-4 w-full leading-7 ${dark ? "text-white/75" : "text-black/75"}`}>{entry.description}</p>
       {entry.id === "DOCS_MAP" && <DocsOverviewMap theme={theme} />}
       {entry.id === "SYSTEM_DESIGN_MAP" && <SystemDesignMap theme={theme} />}
       {entry.id === "MESSAGE_FLOW_MAP" && <MessageFlowMap theme={theme} />}
@@ -221,6 +221,19 @@ export default function Docs() {
   });
   const dark = theme === "dark";
 
+  function handleSelectEntry(entry: NavEntry) {
+    setSelectedEntry(entry);
+    if (entry.kind !== "doc") {
+      setContent("");
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+  }
+
   useEffect(() => {
     window.localStorage.setItem("docs-theme", theme);
     document.documentElement.dataset.theme = theme;
@@ -229,15 +242,10 @@ export default function Docs() {
 
   useEffect(() => {
     if (selectedEntry.kind !== "doc") {
-      setContent("");
-      setError(null);
-      setIsLoading(false);
       return;
     }
 
     let active = true;
-    setIsLoading(true);
-    setError(null);
 
     fetch(selectedEntry.file)
       .then((res) => {
@@ -269,9 +277,9 @@ export default function Docs() {
   }, [selectedEntry]);
 
   return (
-    <div className={dark ? "min-h-screen bg-[#070b14] text-white" : "min-h-screen bg-white text-black"}>
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-4 sm:px-6 sm:py-6 lg:h-dvh lg:overflow-hidden lg:px-8 lg:py-8">
-        <div className={`flex items-center justify-between gap-4 pb-4 ${dark ? "text-white/60" : "text-black/60"}`}>
+    <div className={`docs-theme-shell ${dark ? "min-h-screen bg-[#070b14] text-white" : "min-h-screen bg-white text-black"}`}>
+      <div className="flex min-h-screen w-full flex-col px-3 py-4 sm:px-5 sm:py-6 lg:h-dvh lg:overflow-hidden lg:px-6 lg:py-8">
+        <div className={`flex flex-wrap items-center justify-between gap-3 pb-4 ${dark ? "text-white/60" : "text-black/60"}`}>
           <button
             onClick={() => navigate("/")}
             className={`inline-flex items-center gap-2 text-sm ${dark ? "hover:text-white" : "hover:text-black"}`}
@@ -280,17 +288,22 @@ export default function Docs() {
             Home
           </button>
           <div className="flex items-center gap-3">
-            <div className="text-xs uppercase tracking-[0.3em]">Docs</div>
             <button
               type="button"
               onClick={() => setTheme(dark ? "light" : "dark")}
-              className={`text-xs uppercase tracking-[0.25em] ${dark ? "hover:text-white" : "hover:text-black"}`}
+              className={`group relative isolate overflow-hidden rounded-full px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.34em] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                dark
+                  ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.24)_0%,rgba(137,148,168,0.2)_34%,rgba(38,48,63,0.92)_72%,rgba(10,14,22,0.98)_100%)] text-slate-50 shadow-[0_8px_20px_rgba(6,10,18,0.45)] hover:text-white hover:shadow-[0_10px_24px_rgba(6,10,18,0.52),0_0_0_1px_rgba(255,255,255,0.06)] focus:ring-slate-400/35 focus:ring-offset-[#070b14]"
+                  : "bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(228,232,237,0.96)_32%,rgba(169,178,189,0.96)_68%,rgba(111,120,132,0.98)_100%)] text-slate-800 shadow-[0_8px_18px_rgba(71,85,105,0.16)] hover:text-black hover:shadow-[0_10px_22px_rgba(71,85,105,0.2),0_0_0_1px_rgba(255,255,255,0.35)] focus:ring-slate-500/30 focus:ring-offset-white"
+              }`}
               aria-label="Toggle theme"
             >
-              {dark ? "Light" : "Dark"}
+              <span className="absolute inset-[1px] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.34)_0%,rgba(255,255,255,0.08)_26%,rgba(255,255,255,0)_55%)] opacity-90" />
+              <span className="absolute -left-10 top-[-20%] h-[140%] w-8 rotate-[20deg] bg-white/30 blur-md transition-transform duration-500 ease-out group-hover:translate-x-32" />
+              <span className="relative z-10">{dark ? "Light" : "Dark"}</span>
             </button>
           </div>
-          <div className="w-12" />
+          <div className="hidden w-12 sm:block" />
         </div>
 
         <div className="grid flex-1 gap-6 lg:min-h-0 lg:grid-cols-[220px_minmax(0,1fr)]">
@@ -308,7 +321,7 @@ export default function Docs() {
               value={selectedEntry.id}
               onChange={(e) => {
                 const entry = navEntries.find((item) => item.id === e.target.value);
-                if (entry) setSelectedEntry(entry);
+                if (entry) handleSelectEntry(entry);
               }}
               className={`mb-4 w-full border px-3 py-2 text-sm lg:hidden ${
                 dark ? "border-white/10 bg-[#0b1020] text-white" : "border-black/10 bg-white text-black"
@@ -343,7 +356,7 @@ export default function Docs() {
                   return (
                     <button
                       key={doc.id}
-                      onClick={() => setSelectedEntry(doc)}
+                      onClick={() => handleSelectEntry(doc)}
                       className={`block w-full px-0 py-1 text-left text-sm transition ${
                         active
                           ? dark
@@ -368,7 +381,7 @@ export default function Docs() {
                   return (
                     <button
                       key={map.id}
-                      onClick={() => setSelectedEntry(map)}
+                      onClick={() => handleSelectEntry(map)}
                       className={`block w-full px-0 py-1 text-left text-sm transition ${
                         active
                           ? dark
@@ -389,9 +402,9 @@ export default function Docs() {
 
           <main
             ref={mainRef}
-            className={`scrollbar-hide border p-4 min-w-0 lg:min-h-0 lg:overflow-y-auto ${dark ? "border-white/10 bg-white/5" : "border-black/10 bg-black/[0.03]"}`}
+            className={`scrollbar-hide min-w-0 border p-4 sm:p-5 lg:min-h-0 lg:overflow-y-auto ${dark ? "border-white/10 bg-white/5" : "border-black/10 bg-black/[0.03]"}`}
           >
-            <article className="max-w-4xl">
+            <article className="w-full max-w-none">
               {error && (
                 <div className={`mt-4 text-sm ${dark ? "text-red-300" : "text-red-700"}`}>
                   {error}
@@ -412,7 +425,7 @@ export default function Docs() {
                   <Markdown
                     content={content}
                     theme={theme}
-                    onInternalDocLink={setSelectedEntry}
+                    onInternalDocLink={handleSelectEntry}
                   />
                 </div>
               )}

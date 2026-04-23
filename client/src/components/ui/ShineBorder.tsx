@@ -49,7 +49,7 @@ export function ShineBorder({
       />
       <div
         aria-hidden="true"
-        className="absolute z-10"
+        className="absolute z-10 transition-[background-color] duration-300 ease-out"
         style={{
           inset: borderWidth,
           backgroundColor: surfaceColor,

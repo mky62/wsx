@@ -2,7 +2,7 @@
 
 ## Overview
 
-xMy is a real-time anonymous chat application with two backend implementations (Node.js and Go) sharing the same WebSocket protocol, and a React 19 SPA frontend.
+wsx is a real-time anonymous chat application with two backend implementations (Node.js and Go) sharing the same WebSocket protocol, and a React 19 SPA frontend.
 
 ## System Design
 

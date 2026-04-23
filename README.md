@@ -1,6 +1,6 @@
-# xMy - Anonymous Realtime Chat
+# wsx - Anonymous Realtime Chat
 
-xMy is a **real-time anonymous chat application** with equal participants and temporary encrypted reconnect history.
+wsx is a **real-time anonymous chat application** with equal participants and temporary encrypted reconnect history.
 
 ## System Architecture
 

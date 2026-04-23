@@ -1,6 +1,6 @@
-# xMy Documentation
+# wsx Documentation
 
-xMy is an anonymous, real-time chat application with no accounts, no ownership hierarchy, and equal participant permissions.
+wsx is an anonymous, real-time chat application with no accounts, no ownership hierarchy, and equal participant permissions.
 
 ## Quick Start
 

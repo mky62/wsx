@@ -31,7 +31,7 @@ export default function RoomMembersPanel({
       role="presentation"
     >
       <aside
-        className="absolute inset-x-0 bottom-0 max-h-[75dvh] overflow-hidden rounded-t-3xl border border-white/10 bg-slate-950/95 text-slate-100 shadow-2xl sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[380px] sm:max-w-[85vw] sm:rounded-none sm:rounded-l-3xl"
+        className="absolute inset-x-0 bottom-0 max-h-[82dvh] overflow-hidden rounded-t-3xl border border-white/10 bg-slate-950/95 text-slate-100 shadow-2xl sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[380px] sm:max-w-[85vw] sm:rounded-none sm:rounded-l-3xl"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -55,7 +55,7 @@ export default function RoomMembersPanel({
           </button>
         </div>
 
-        <div className="max-h-[calc(75dvh-88px)] overflow-y-auto px-4 py-3 sm:max-h-dvh sm:px-5 sm:py-4">
+        <div className="max-h-[calc(82dvh-88px)] overflow-y-auto px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:max-h-dvh sm:px-5 sm:py-4">
           <div className="space-y-3">
             {participants.map((participant) => {
               const isSelf = participant.participantId === currentParticipantId;
@@ -82,7 +82,7 @@ export default function RoomMembersPanel({
                       )}
                     </div>
 
-                    <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full bg-emerald-400" />
                         Online

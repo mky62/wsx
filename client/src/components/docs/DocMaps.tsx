@@ -30,7 +30,7 @@ function DiagramShell({
   return (
     <section className={`my-6 border p-4 ${shellClasses(theme)}`}>
       <div className={`mb-2 text-[11px] uppercase tracking-[0.3em] ${mutedClasses(theme)}`}>{title}</div>
-      <p className={`mb-4 max-w-3xl text-sm leading-6 ${mutedClasses(theme)}`}>{caption}</p>
+      <p className={`mb-4 w-full text-sm leading-6 ${mutedClasses(theme)}`}>{caption}</p>
       <MermaidDiagram chart={chart} theme={theme} />
     </section>
   );
@@ -38,7 +38,7 @@ function DiagramShell({
 
 const docsMapChart = String.raw`
 mindmap
-  root((xMy Docs))
+  root((wsx Docs))
     Overview
       Quick start
       Feature summary

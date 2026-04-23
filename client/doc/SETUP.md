@@ -163,8 +163,8 @@ Output in `server/dist/`
 **Go Backend:**
 ```bash
 cd backend-go
-go build -o xmy-server .
-./xmy-server
+go build -o wsx-server .
+./wsx-server
 ```
 
 ## Development Workflow

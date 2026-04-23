@@ -2,7 +2,7 @@
 
 ## Overview
 
-xMy uses a JSON-based WebSocket protocol for real-time communication. The protocol is identical between the Node.js and Go backend implementations.
+wsx uses a JSON-based WebSocket protocol for real-time communication. The protocol is identical between the Node.js and Go backend implementations.
 
 ## Connection
 
