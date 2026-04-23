@@ -145,15 +145,11 @@ export default function Home() {
 
   // Strict scroll disabling effect
   useEffect(() => {
-    // 1. Add class to html and body
     document.documentElement.classList.add('home-lock');
     document.body.classList.add('home-lock');
 
-    // 2. Prevent default scroll events
     const preventDefault = (e: Event) => e.preventDefault();
-
-    // Options for passive: false to allow preventDefault
-    const options = { passive: false };
+    const options = { passive: false } as AddEventListenerOptions;
 
     window.addEventListener('wheel', preventDefault, options);
     window.addEventListener('touchmove', preventDefault, options);
@@ -257,28 +253,28 @@ export default function Home() {
   const canContinue = state.alias && !state.isGenerating;
 
   return (
-    <div className="h-dvh flex flex-col paper-terminal terminal-text bg-brand-gradient text-[#0a0a0a] font-mono relative overflow-hidden">
+    <div className="relative flex h-dvh flex-col overflow-hidden bg-brand-gradient text-[#0a0a0a] paper-terminal terminal-text font-mono">
       <div className="pulsar pulsar-top-right" />
       <div className="pulsar pulsar-bottom-left" />
 
-      <main className="relative z-10 flex-1 min-h-0 max-w-6xl w-full mx-auto px-4 md:px-6 py-4 md:py-7 flex flex-col gap-4">
+      <main className="relative z-10 mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col justify-center gap-3 px-3 py-3 sm:px-5 sm:py-4 md:px-6 md:py-6 lg:justify-start lg:py-7">
         <section
-          className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)] border border-[#d6d4cc]/85 bg-[#faf9f6]/90 shadow-xl"
+          className="grid min-h-0 border border-[#d6d4cc]/85 bg-[#faf9f6]/90 shadow-xl lg:flex-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]"
           aria-labelledby="terminal-heading"
         >
-          <div className="flex min-h-0 flex-col p-4 md:p-6">
-            <div className="flex items-start justify-between gap-4 border-b border-[#d6d4cc] pb-4">
-              <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-h-0 flex-col p-3 sm:p-4 md:p-6">
+            <div className="flex items-start justify-between gap-3 border-b border-[#d6d4cc] pb-3 sm:gap-4 sm:pb-4">
+              <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                 <img
                   src={baseLogo}
                   alt="xMy secure chat"
-                  className="h-10 w-10 shrink-0 rounded-lg border border-black/10 bg-[#f7f6f2] shadow-sm"
+                  className="h-9 w-9 shrink-0 rounded-lg border border-black/10 bg-[#f7f6f2] shadow-sm sm:h-10 sm:w-10"
                 />
                 <div className="min-w-0">
                   <div className="text-[10px] uppercase tracking-wide text-[#6b6b6b]">
                     active route /
                   </div>
-                  <h1 id="terminal-heading" className="mt-1 text-xl md:text-3xl text-black">
+                  <h1 id="terminal-heading" className="mt-1 text-lg text-black sm:text-xl md:text-3xl">
                     Anonymous session interface
                   </h1>
                 </div>
@@ -289,7 +285,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex-1 min-h-0 py-5 md:py-6">
+            <div className="py-4 sm:py-5 md:py-6 lg:flex-1 lg:min-h-0">
               {state.error && (
                 <div
                   role="alert"
@@ -300,7 +296,7 @@ export default function Home() {
               )}
 
               {state.phase === "identity" && (
-                <div className="grid h-full content-center gap-5">
+                <div className="grid gap-4 lg:h-full lg:content-center lg:gap-5">
                   <div>
                     <label htmlFor="alias-display" className="text-xs uppercase tracking-wide mb-2 block">
                       generated identity
@@ -308,7 +304,7 @@ export default function Home() {
 
                     <div
                       id="alias-display"
-                      className={`terminal-output text-base md:text-lg ${state.isSettling ? "paper-settle" : ""}`}
+                      className={`terminal-output text-sm sm:text-base md:text-lg ${state.isSettling ? "paper-settle" : ""}`}
                       role="status"
                       aria-live="polite"
                       aria-atomic="true"
@@ -350,7 +346,7 @@ export default function Home() {
               )}
 
               {state.phase === "session" && (
-                <div className="grid h-full content-center gap-5">
+                <div className="grid gap-4 lg:h-full lg:content-center lg:gap-5">
                   <div>
                     <div className="text-xs uppercase tracking-wide text-[#6b6b6b]">session control</div>
                     <div className="mt-2 border border-[#d6d4cc] bg-[#f0efe9] px-3 py-3 text-sm">
@@ -417,6 +413,18 @@ export default function Home() {
                   <div id="room-id-help" className="sr-only">
                     Enter the room ID to join an existing chat room
                   </div>
+
+                  <div className="hidden border border-black/10 bg-black/[0.035] p-3 text-sm sm:block lg:hidden">
+                    <div className="text-[10px] uppercase tracking-wide text-[#6b6b6b]">
+                      system notice
+                    </div>
+                    <p className="mt-2 text-base text-black">
+                      Recent messages stay encrypted for reloads and short connection breaks.
+                    </p>
+                    <p className="mt-2 text-sm text-black/65">
+                      Rooms disappear after everyone leaves or reconnect grace ends.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -444,7 +452,7 @@ export default function Home() {
           </aside>
         </section>
 
-        <section className="grid shrink-0 grid-cols-1 gap-3 md:grid-cols-3">
+        <section className="hidden shrink-0 grid-cols-1 gap-2 sm:grid md:grid-cols-3 md:gap-3">
           <TrustItem
             icon={<Users size={18} />}
             title="Equal Participants"

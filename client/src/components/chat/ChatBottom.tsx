@@ -44,15 +44,13 @@ function ChatBottom({
   );
 
   return (
-    <div className="shrink-0 flex h-16 items-center gap-2 px-4 py-3 bg-neutral-900/60 border-neutral-700">
+    <div className="flex shrink-0 items-center gap-2 border-t border-neutral-700/70 bg-neutral-900/75 px-3 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:px-4">
       <input
         ref={inputRef}
         type="text"
         value={message}
         placeholder="Type a message…"
-        className="grow bg-neutral-800 text-neutral-100 placeholder-neutral-400
-                   rounded-full px-4 py-2 text-base sm:text-sm
-                   focus:outline-none focus:ring-2 focus:ring-amber-400"
+        className="min-w-0 grow rounded-full bg-neutral-800 px-4 py-3 text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-400 sm:py-2.5"
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
       />
@@ -60,11 +58,7 @@ function ChatBottom({
       <button
         onClick={handleSend}
         disabled={!message.trim() || !canSend}
-        className="flex items-center justify-center
-                   h-11 w-11 rounded-full
-                   bg-amber-400 hover:bg-amber-500
-                   disabled:bg-neutral-500 disabled:cursor-not-allowed
-                   transition"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-400 transition hover:bg-amber-500 disabled:cursor-not-allowed disabled:bg-neutral-500 sm:h-10 sm:w-10"
       >
         <img src={sendIcon} alt="Send" className="w-5 h-5" />
       </button>

@@ -71,8 +71,8 @@
 
 .pulsar {
     position: absolute;
-    width: 520px;
-    height: 520px;
+    width: clamp(260px, 45vw, 520px);
+    height: clamp(260px, 45vw, 520px);
     border-radius: 50%;
     pointer-events: none;
     opacity: 0.6;
@@ -100,15 +100,15 @@
 
 /* Top-right ring */
 .pulsar-top-right {
-    top: -220px;
-    right: -220px;
+    top: -22vw;
+    right: -22vw;
     color: rgba(0, 255, 200, 0.8);
 }
 
 /* Bottom-left ring */
 .pulsar-bottom-left {
-    bottom: -220px;
-    left: -220px;
+    bottom: -22vw;
+    left: -22vw;
     color: rgba(248, 186, 50, 0.833);
     animation-delay: 4.5s;
 }

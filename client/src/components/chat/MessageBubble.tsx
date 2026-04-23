@@ -20,7 +20,7 @@ const MessageBubble = React.memo(function MessageBubble({
   return (
     <div className={`flex ${isSelf ? "justify-end" : "justify-start"}`}>
       <div
-        className={`relative max-w-[85%] sm:max-w-xs rounded-lg px-4 py-2 ${
+        className={`relative w-fit max-w-[92%] rounded-lg px-3 py-2 sm:max-w-[75%] sm:px-4 ${
           isSelf ? "bg-blue-500 text-white" : "bg-white text-black"
         }`}
       >
@@ -34,7 +34,7 @@ const MessageBubble = React.memo(function MessageBubble({
           </time>
         </div>
 
-        <p>{message.text}</p>
+        <p className="break-words text-sm leading-5 sm:text-[15px]">{message.text}</p>
       </div>
     </div>
   );
