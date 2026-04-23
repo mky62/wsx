@@ -1,4 +1,4 @@
-import { ExtendedWebSocket } from './connection.js';
+import { CustomWebSocket } from '../types/room.js';
 import { handleJoin } from '../handlers/joinHandler.js';
 import { handleMessage } from '../handlers/messageHandlers.js';
 import { handleLeave } from '../handlers/leaveHandler.js';
@@ -14,7 +14,7 @@ export interface MessagePayload {
     [key: string]: any; //allow addtional properties
 }
 
-type MessageHandler = (ws: ExtendedWebSocket, message: any) => void | Promise<void>;
+type MessageHandler = (ws: CustomWebSocket, message: any) => void | Promise<void>;
 
 const handlers: Record<MessageType, MessageHandler> = {
     "JOIN_ROOM": handleJoin as MessageHandler,
@@ -26,7 +26,7 @@ function isMessageType(type: unknown): type is MessageType {
     return typeof type === "string" && type in handlers;
 }
 
-export async function routeMessage(ws: ExtendedWebSocket, message: any) {
+export async function routeMessage(ws: CustomWebSocket, message: any) {
     const type = message?.type;
     if (!isMessageType(type)) {
         // Send error response to client instead of silent fail

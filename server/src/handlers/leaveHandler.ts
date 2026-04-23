@@ -1,25 +1,19 @@
-import { WebSocket } from 'ws';
+import { CustomWebSocket } from '../types/room.js';
 import { roomManager } from '../services/RoomManager.js';
-
-interface ExtendedWebSocket extends WebSocket {
-    roomId?: string | null;
-    intentionalLeave?: boolean;
-}
 
 interface LeavePayload {
     type: "LEAVE_ROOM";
 }
 
-export function handleLeave(ws: WebSocket, payload: LeavePayload): void {
-    const socket = ws as ExtendedWebSocket;
+export function handleLeave(ws: CustomWebSocket, payload: LeavePayload): void {
     void payload;
 
     // Mark as intentional leave - this will be handled in connection close
-    socket.intentionalLeave = true;
-    if (socket.roomId) {
-        void roomManager.leaveRoom(socket.roomId, socket);
+    ws.intentionalLeave = true;
+    if (ws.roomId) {
+        void roomManager.leaveRoom(ws.roomId, ws);
     }
 
     // Close the connection
-    socket.close(1000, "Intentional leave");
+    ws.close(1000, "Intentional leave");
 }

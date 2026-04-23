@@ -22,8 +22,13 @@ type ChatAction =
 
 export function chatReducer(state: ChatEntry[], action: ChatAction): ChatEntry[] {
   switch (action.type) {
-    case "ADD_MESSAGE":
+    case "ADD_MESSAGE": {
+      const existingIds = new Set(state.map(msg => msg.id));
+      if (existingIds.has(action.payload.id)) {
+        return state;
+      }
       return [...state, action.payload];
+    }
 
     case "SET_HISTORY": {
       // Create a Set of existing message IDs for O(1) lookup

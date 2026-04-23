@@ -1,18 +1,10 @@
 import { WebSocket } from 'ws';
+import { CustomWebSocket } from '../types/room.js';
 import { routeMessage } from './messageRouter.js';
 import { roomManager } from '../services/RoomManager.js';
 
-export interface ExtendedWebSocket extends WebSocket {
-  roomId: string | null;
-  participantId: string | null;
-  username: string | null;
-  intentionalLeave?: boolean;
-  replaced?: boolean;
-  messageTimestamps: number[];
-}
-
 export function handleConnection(ws: WebSocket) {
-  const socket = ws as ExtendedWebSocket;
+  const socket = ws as CustomWebSocket;
   socket.roomId = null;
   socket.participantId = null;
   socket.username = null;

@@ -16,14 +16,29 @@ func randomString(length int, alphabet string) string {
 		return ""
 	}
 
-	buf := make([]byte, length)
-	if _, err := rand.Read(buf); err != nil {
-		panic(fmt.Errorf("failed generating random id: %w", err))
+	alphaLen := len(alphabet)
+	// rejectionLimit is the largest multiple of alphaLen <= 256.
+	// Bytes >= rejectionLimit are discarded to avoid modulo bias.
+	rejectionLimit := 256 / alphaLen * alphaLen
+	if rejectionLimit == 0 {
+		rejectionLimit = 1
 	}
 
 	out := make([]byte, length)
-	for i, b := range buf {
-		out[i] = alphabet[int(b)%len(alphabet)]
+	for i := 0; i < length; {
+		var buf [8]byte
+		if _, err := rand.Read(buf[:]); err != nil {
+			panic(fmt.Errorf("failed generating random id: %w", err))
+		}
+		for _, b := range buf {
+			if int(b) < rejectionLimit {
+				out[i] = alphabet[int(b)%alphaLen]
+				i++
+				if i == length {
+					break
+				}
+			}
+		}
 	}
 	return string(out)
 }

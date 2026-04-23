@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws';
+import { CustomWebSocket } from '../types/room.js';
 import { roomManager } from '../services/RoomManager.js'
 
 interface JoinPayload {
@@ -9,7 +9,7 @@ interface JoinPayload {
     reconnectToken?: string;
 }
 
-export async function handleJoin(ws: WebSocket, payload: JoinPayload): Promise<void> {
+export async function handleJoin(ws: CustomWebSocket, payload: JoinPayload): Promise<void> {
     if (!payload.roomId || !payload.username) {
         roomManager.sendToUser(ws, {
             type: "ERROR",

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -210,7 +210,9 @@ func (s *MessageStore) decrypt(text string) (string, error) {
 		return "", err
 	}
 
-	combined := append(bytes.Clone(encrypted), authTag...)
+	combined := make([]byte, len(encrypted)+len(authTag))
+	copy(combined, encrypted)
+	copy(combined[len(encrypted):], authTag)
 	plain, err := gcm.Open(nil, iv, combined, nil)
 	if err != nil {
 		return "", err
@@ -232,7 +234,7 @@ func validReconnectToken(participant *ParticipantRecord, reconnectToken string) 
 	if err != nil {
 		return false
 	}
-	return bytes.Equal(left, right)
+	return subtle.ConstantTimeCompare(left, right) == 1
 }
 
 func slicesReverse(values []ChatMessage) {
