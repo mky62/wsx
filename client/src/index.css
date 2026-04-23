@@ -196,7 +196,7 @@
 
 /* ===== Custom Utilities ===== */
 .bg-brand-gradient {
-    background: linear-gradient(192deg, rgba(12,130,247,1) 0%, rgba(87,199,133,1) 50%, rgba(237,221,83,1) 100%);
+    background: linear-gradient(192deg, rgb(8, 102, 204) 0%, rgb(60, 168, 126) 52%, rgb(190, 198, 70) 100%);
 }
 
 .home-cubes-scene {

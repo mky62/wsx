@@ -150,11 +150,11 @@ function ChatView() {
   };
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden">
+    <div className="relative h-dvh w-full overflow-hidden">
       <div className="absolute inset-0 bg-cover bg-center bg-[#cfa913] bg-[linear-gradient(15deg,rgba(207,169,19,0.99)_6%,rgba(0,181,157,0.95)_100%)]" />
       <div className="absolute inset-0 bg-black/40" />
 
-      <div className="relative z-10 flex min-h-dvh flex-col">
+      <div className="relative z-10 flex h-full min-h-0 flex-col overflow-hidden">
         <ChatTop
           roomId={roomId}
           userCount={participants.length}
@@ -168,23 +168,25 @@ function ChatView() {
           </div>
         )}
 
-        <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3 sm:px-4 sm:py-4">
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           {!joinConfirmed ? (
-            <div className="flex h-full items-center justify-center px-4 text-center">
+            <div className="flex h-full w-full items-center justify-center px-4 text-center">
               <div className="text-base text-white sm:text-lg">Joining room...</div>
             </div>
           ) : (
-            messages.map((m) =>
-              m.type === "SYSTEM" ? (
-                <SystemMessage key={m.id} text={m.text} />
-              ) : (
-                <MessageBubble
-                  key={m.id}
-                  message={m}
-                  isSelf={m.participantId === session.participantId}
-                />
-              )
-            )
+            <div className="w-full space-y-2 lg:px-2">
+              {messages.map((m) =>
+                m.type === "SYSTEM" ? (
+                  <SystemMessage key={m.id} text={m.text} />
+                ) : (
+                  <MessageBubble
+                    key={m.id}
+                    message={m}
+                    isSelf={m.participantId === session.participantId}
+                  />
+                )
+              )}
+            </div>
           )}
         </div>
 
@@ -197,7 +199,6 @@ function ChatView() {
       <RoomMembersPanel
         isOpen={isMembersOpen}
         participants={participants}
-        currentParticipantId={session.participantId}
         onClose={() => setIsMembersOpen(false)}
       />
     </div>
