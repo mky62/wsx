@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import { ArrowLeft } from "lucide-react";
-import { DocsOverviewMap, SystemDesignMap } from "../components/docs/DocMaps";
+import { DocsOverviewMap, MessageFlowMap, RecoveryFlowMap, SystemDesignMap } from "../components/docs/DocMaps";
 import { ShineBorder } from "../components/ui/ShineBorder";
 
 const docs = [
@@ -27,6 +27,18 @@ const maps = [
     id: "SYSTEM_DESIGN_MAP",
     title: "System Design Map",
     description: "Visual breakdown of client, server, storage, and request flow.",
+    kind: "map",
+  },
+  {
+    id: "MESSAGE_FLOW_MAP",
+    title: "Message Flow Map",
+    description: "Detailed path from message composition to validation, encryption, storage, and broadcast.",
+    kind: "map",
+  },
+  {
+    id: "RECOVERY_FLOW_MAP",
+    title: "Recovery Flow Map",
+    description: "Disconnect, grace period, reconnect token checks, and session restoration lifecycle.",
     kind: "map",
   },
 ] as const;
@@ -178,6 +190,8 @@ function Markdown({
   };
 
   return <ReactMarkdown components={components}>{content}</ReactMarkdown>;
+}
+
 function MapPage({ entry, theme }: { entry: MapEntry; theme: Theme }) {
   const dark = theme === "dark";
 
@@ -185,7 +199,10 @@ function MapPage({ entry, theme }: { entry: MapEntry; theme: Theme }) {
     <div className="mt-2">
       <h1 className={`mt-0 mb-4 text-3xl font-semibold tracking-tight sm:text-4xl ${dark ? "text-white" : "text-black"}`}>{entry.title}</h1>
       <p className={`my-4 max-w-2xl leading-7 ${dark ? "text-white/75" : "text-black/75"}`}>{entry.description}</p>
-      {entry.id === "DOCS_MAP" ? <DocsOverviewMap theme={theme} /> : <SystemDesignMap theme={theme} />}
+      {entry.id === "DOCS_MAP" && <DocsOverviewMap theme={theme} />}
+      {entry.id === "SYSTEM_DESIGN_MAP" && <SystemDesignMap theme={theme} />}
+      {entry.id === "MESSAGE_FLOW_MAP" && <MessageFlowMap theme={theme} />}
+      {entry.id === "RECOVERY_FLOW_MAP" && <RecoveryFlowMap theme={theme} />}
     </div>
   );
 }
