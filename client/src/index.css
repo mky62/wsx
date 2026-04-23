@@ -131,6 +131,16 @@
     }
 }
 
+@keyframes shine-border-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* ===== Custom Utilities ===== */
 .bg-brand-gradient {
     background: linear-gradient(192deg, rgba(12,130,247,1) 0%, rgba(87,199,133,1) 50%, rgba(237,221,83,1) 100%);
@@ -155,4 +165,14 @@
         overflow: hidden !important;
         touch-action: none;
     }
+}
+
+/* ===== Scrollbar Hiding ===== */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
 }

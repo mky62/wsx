@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText } from "lucide-react";
-import { FileText } from "lucide-react";
 import baseLogo from "../assets/logo.png";
 import heroImg from "../assets/heroimgfn.jpg";
 import { inMemorySession } from "../tempStorage/globalSession";
@@ -275,17 +274,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-              <div className="flex items-center gap-3">
                 <div className="flex h-8 items-center gap-1.5 rounded-md border border-black/15 bg-[#f0efe9] px-2">
                   <span className={`h-2 w-2 rounded-full ${state.phase === "identity" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
                   <span className={`h-2 w-2 rounded-full ${state.phase === "session" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
-                </div>
-                <button
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-black/15 bg-[#f0efe9] text-[#6b6b6b] hover:border-black hover:bg-black hover:text-[#f7f6f2] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all"
-                  aria-label="View documentation"
-                >
-                  <FileText size={16} />
-                </button>
                 </div>
                 <button
                   onClick={() => navigate("/docs")}
@@ -445,7 +436,6 @@ export default function Home() {
                         >
                           {state.isNavigating ? "joining..." : "enter room"}
                         </button>
-                      </div>
                       </div>
                     </div>
                   </div>
