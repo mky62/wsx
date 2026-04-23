@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import baseLogo from "../assets/logo.png";
 import heroImg from "../assets/heroimgfn.jpg";
 import { inMemorySession } from "../tempStorage/globalSession";
-import { ShieldCheck, RefreshCcw, Users } from "lucide-react";
 
 
 // Constants
@@ -105,18 +104,6 @@ function getApiBaseUrl(): string {
   if (wsUrl) return wsUrl.replace(/^ws/, "http").replace(/\/$/, "");
 
   return "http://localhost:8080";
-}
-
-function TrustItem({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#d6d4cc]/60 bg-[#faf9f6]/85 p-3 backdrop-blur-md shadow-sm transition-all hover:bg-[#faf9f6]/95">
-      <div className="text-black/70">{icon}</div>
-      <div>
-        <div className="font-bold text-xs text-[#0a0a0a] uppercase tracking-wide">{title}</div>
-        <div className="text-xs text-[#6b6b6b]">{desc}</div>
-      </div>
-    </div>
-  );
 }
 
 // Component
@@ -456,26 +443,6 @@ export default function Home() {
               </p>
             </div>
           </aside>
-        </section>
-
-        <section className="hidden shrink-0 grid-cols-1 gap-2 sm:grid md:grid-cols-3 md:gap-3">
-          <TrustItem
-            icon={<Users size={18} />}
-            title="Equal Participants"
-            desc="No owners, admins, mute, or delete controls"
-          />
-
-          <TrustItem
-            icon={<RefreshCcw size={18} />}
-            title="Reload Recovery"
-            desc="Reconnect tokens restore active-room sessions"
-          />
-
-          <TrustItem
-            icon={<ShieldCheck size={18} />}
-            title="Encrypted History"
-            desc="Last 50 messages while the room is active"
-          />
         </section>
       </main>
     </div>
