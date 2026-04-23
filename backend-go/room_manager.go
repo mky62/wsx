@@ -8,11 +8,13 @@ import (
 )
 
 const (
-	reconnectGracePeriod = 30 * time.Second
-	messageLimit         = 1000
-	rateLimitWindowMS    = int64(10_000)
-	rateLimitMaxMessages = 20
-	maxWSPayloadBytes    = 16 * 1024
+	reconnectGracePeriod   = 30 * time.Second
+	messageLimit           = 1000
+	rateLimitWindowMS      = int64(10_000)
+	rateLimitMaxMessages   = 20
+	maxWSPayloadBytes      = 16 * 1024
+	maxParticipantsPerRoom = 50
+	maxRooms               = 1000
 )
 
 var (
@@ -49,19 +51,23 @@ func (m *RoomManager) CreateRoomID() string {
 	return newRoomID()
 }
 
-func (m *RoomManager) getOrCreateRoom(roomID string) *Room {
+func (m *RoomManager) getOrCreateRoom(roomID string) (*Room, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	room, ok := m.rooms[roomID]
 	if ok {
-		return room
+		return room, nil
+	}
+
+	if len(m.rooms) >= maxRooms {
+		return nil, fmt.Errorf("server at capacity; try again later")
 	}
 
 	room = NewRoom(roomID, time.Now().UnixMilli())
 	m.rooms[roomID] = room
 	m.messageStore.DeleteRoomMessages(roomID)
-	return room
+	return room, nil
 }
 
 func (m *RoomManager) JoinRoom(roomID, username string, socket *WSConn, participantID, reconnectToken string) (*JoinResult, error) {
@@ -72,7 +78,10 @@ func (m *RoomManager) JoinRoom(roomID, username string, socket *WSConn, particip
 		return nil, fmt.Errorf("invalid username")
 	}
 
-	room := m.getOrCreateRoom(roomID)
+	room, err := m.getOrCreateRoom(roomID)
+	if err != nil {
+		return nil, err
+	}
 
 	var participant *ParticipantRecord
 	token := reconnectToken
@@ -86,6 +95,11 @@ func (m *RoomManager) JoinRoom(roomID, username string, socket *WSConn, particip
 	if reconnect == nil && active == nil && room.hasUsername(username) {
 		room.mu.Unlock()
 		return nil, fmt.Errorf("username already taken")
+	}
+
+	if room.userCount() >= maxParticipantsPerRoom && reconnect == nil && active == nil {
+		room.mu.Unlock()
+		return nil, fmt.Errorf("room is full")
 	}
 
 	if reconnect != nil {

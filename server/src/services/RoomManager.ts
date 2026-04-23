@@ -6,6 +6,8 @@ import { Room } from "../models/Room.js";
 import { messageStore } from "./messageService.js";
 
 const RECONNECT_GRACE_PERIOD_MS = 30 * 1000;
+const MAX_PARTICIPANTS_PER_ROOM = 50;
+const MAX_ROOMS = 1000;
 const createRoomId = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789-", 10);
 
 interface JoinResult {
@@ -30,6 +32,9 @@ class RoomManager {
     private async getOrCreateRoom(roomId: string): Promise<Room> {
         let room = this.rooms.get(roomId);
         if (!room) {
+            if (this.rooms.size >= MAX_ROOMS) {
+                throw new Error("server at capacity; try again later");
+            }
             room = new Room(roomId, Date.now());
             this.rooms.set(roomId, room);
             await messageStore.deleteRoomMessages(roomId);
@@ -49,6 +54,10 @@ class RoomManager {
 
         const reconnect = this.getReconnectParticipant(room, username, participantId, reconnectToken);
         const active = this.getActiveParticipant(room, username, participantId, reconnectToken);
+
+        if (room.userCount >= MAX_PARTICIPANTS_PER_ROOM && !reconnect && !active) {
+            throw new Error("room is full");
+        }
 
         if (!reconnect && !active && room.hasUsername(username)) {
             throw new Error("username already taken");
