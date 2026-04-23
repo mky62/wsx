@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { FileText } from "lucide-react";
 import baseLogo from "../assets/logo.png";
 import heroImg from "../assets/heroimgfn.jpg";
 import { inMemorySession } from "../tempStorage/globalSession";
@@ -272,9 +273,18 @@ export default function Home() {
                   </h1>
                 </div>
               </div>
-              <div className="flex h-8 items-center gap-1.5 rounded-md border border-black/15 bg-[#f0efe9] px-2">
-                <span className={`h-2 w-2 rounded-full ${state.phase === "identity" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
-                <span className={`h-2 w-2 rounded-full ${state.phase === "session" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 items-center gap-1.5 rounded-md border border-black/15 bg-[#f0efe9] px-2">
+                  <span className={`h-2 w-2 rounded-full ${state.phase === "identity" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
+                  <span className={`h-2 w-2 rounded-full ${state.phase === "session" ? "bg-cyan-500" : "bg-[#d6d4cc]"}`} />
+                </div>
+                <button
+                  onClick={() => navigate("/docs")}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-black/15 bg-[#f0efe9] text-[#6b6b6b] hover:border-black hover:bg-black hover:text-[#f7f6f2] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all"
+                  aria-label="View documentation"
+                >
+                  <FileText size={16} />
+                </button>
               </div>
             </div>
 
@@ -339,75 +349,99 @@ export default function Home() {
               )}
 
               {state.phase === "session" && (
-                <div className="grid gap-4 lg:h-full lg:content-center lg:gap-5">
-                  <div>
-                    <div className="text-xs uppercase tracking-wide text-[#6b6b6b]">session control</div>
-                    <div className="mt-2 border border-[#d6d4cc] bg-[#f0efe9] px-3 py-3 text-sm">
-                      identity: <span className="font-bold">{inMemorySession.username}</span>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
-                    <button
-                      onClick={handleCreateSession}
-                      disabled={state.isNavigating}
-                      className="h-12 border border-black bg-black px-4 uppercase tracking-wide text-[#f7f6f2] hover:bg-[#f7f6f2] hover:text-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-40 transition-colors"
-                      aria-label="Create new chat session"
-                    >
-                      {state.isNavigating ? "creating..." : "create room"}
-                    </button>
-
-                    <div className="text-center text-xs uppercase text-[#6b6b6b]" aria-hidden="true">
-                      or
-                    </div>
-
-                    <div className="grid gap-2">
-                      <label htmlFor="room-id-input" className="sr-only">
-                        Session ID
-                      </label>
-                      <input
-                        id="room-id-input"
-                        type="text"
-                        value={state.roomId}
-                        onChange={(e) => handleRoomIdChange(e.target.value)}
-                        onKeyDown={handleRoomIdKeyPress}
-                        placeholder="room id"
-                        disabled={state.isNavigating}
-                        className="
-                          h-12 w-full px-3
-                          bg-[#f0efe9]
-                          border border-[#d6d4cc]
-                          focus:outline-none focus:ring-2 focus:ring-black focus:border-black
-                          disabled:opacity-40
-                        "
-                        aria-describedby="room-id-help"
-                        maxLength={MAX_ROOM_ID_LENGTH}
-                      />
+                <div className="grid gap-6 font-mono lg:h-full lg:content-center lg:gap-8">
+                  {/* Identity Badge */}
+                  <div className="relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-black/10 via-transparent to-black/10 blur-sm opacity-50"></div>
+                    <div className="relative flex items-center justify-between gap-4 rounded-xl border-2 border-black bg-[#faf9f6] p-4 shadow-lg">
+                      <div className="flex-1">
+                        <div className="text-[10px] uppercase tracking-widest text-[#6b6b6b]">your identity</div>
+                        <div className="mt-1 text-lg tracking-tight text-black">{inMemorySession.username}</div>
+                      </div>
                       <button
-                        onClick={handleJoinSession}
+                        onClick={handleBackToIdentity}
                         disabled={state.isNavigating}
-                        className="h-10 border border-[#6b6b6b] uppercase tracking-wide hover:border-black hover:bg-[#f0efe9] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-40 transition-colors"
-                        aria-label="Join existing session"
+                        className="shrink-0 rounded-lg border border-[#d6d4cc] bg-[#f0efe9] px-3 py-1.5 text-xs uppercase tracking-wide text-[#6b6b6b] hover:border-black hover:bg-black hover:text-[#f7f6f2] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-40 transition-all"
+                        aria-label="Regenerate identity"
                       >
-                        {state.isNavigating ? "joining..." : "join room"}
+                        change
                       </button>
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleBackToIdentity}
-                    disabled={state.isNavigating}
-                    className="w-fit text-xs underline text-[#6b6b6b] hover:text-black focus:outline-none focus:text-black disabled:opacity-40"
-                    aria-label="Go back to regenerate identity"
-                  >
-                    regenerate identity
-                  </button>
+                  {/* Action Cards */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {/* Create Room Card */}
+                    <button
+                      onClick={handleCreateSession}
+                      disabled={state.isNavigating}
+                      className="group relative overflow-hidden rounded-2xl border-2 border-black bg-black p-6 text-left transition-all hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-40 disabled:hover:scale-100"
+                      aria-label="Create new chat room"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                      <div className="relative">
+                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f7f6f2]">
+                          <svg className="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </div>
+                        <div className="text-2xl text-[#f7f6f2]">create room</div>
+                        <div className="mt-1 text-sm text-[#f7f6f2]/70">
+                          Start a new anonymous chat
+                        </div>
+                      </div>
+                    </button>
 
+                    {/* Join Room Card */}
+                    <div className="flex flex-col gap-3 rounded-2xl border-2 border-[#d6d4cc] bg-[#faf9f6] p-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f0efe9]">
+                          <svg className="h-6 w-6 text-[#6b6b6b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-lg text-black">join room</div>
+                          <div className="text-xs text-[#6b6b6b]">Enter an existing room ID</div>
+                        </div>
+                      </div>
+                      <div className="grid gap-2">
+                        <label htmlFor="room-id-input" className="sr-only">
+                          Room ID
+                        </label>
+                        <input
+                          id="room-id-input"
+                          type="text"
+                          value={state.roomId}
+                          onChange={(e) => handleRoomIdChange(e.target.value)}
+                          onKeyDown={handleRoomIdKeyPress}
+                          placeholder="room id"
+                          disabled={state.isNavigating}
+                          className="
+                            w-full rounded-lg border border-[#d6d4cc] bg-[#f0efe9] px-4 py-3
+                            text-sm font-mono
+                            focus:outline-none focus:ring-2 focus:ring-black focus:border-black
+                            disabled:opacity-40
+                            transition-all
+                          "
+                          aria-describedby="room-id-help"
+                          maxLength={MAX_ROOM_ID_LENGTH}
+                        />
+                        <button
+                          onClick={handleJoinSession}
+                          disabled={state.isNavigating || !state.roomId.trim()}
+                          className="w-full rounded-lg border-2 border-black bg-black px-4 py-3 uppercase tracking-wide text-[#f7f6f2] hover:bg-[#f7f6f2] hover:text-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                          aria-label="Join existing room"
+                        >
+                          {state.isNavigating ? "joining..." : "enter room"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   <div id="room-id-help" className="sr-only">
                     Enter the room ID to join an existing chat room
                   </div>
-
-                  <div className="hidden border border-black/10 bg-black/[0.035] p-3 text-sm sm:block lg:hidden">
+                  <div className="hidden rounded-xl border border-black/10 bg-black/[0.035] p-4 text-sm sm:block lg:hidden">
                     <div className="text-[10px] uppercase tracking-wide text-[#6b6b6b]">
                       system notice
                     </div>
