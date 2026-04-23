@@ -143,24 +143,30 @@ export default function Home() {
     }, ALIAS_GENERATION_DELAY);
   }, []);
 
-  // Strict scroll disabling effect
+  // Scroll lock only on desktop (lg+) where content fits in viewport.
+  // On smaller screens, allow scrolling for accessibility.
   useEffect(() => {
-    document.documentElement.classList.add('home-lock');
-    document.body.classList.add('home-lock');
+    const isDesktop = window.matchMedia('(min-width: 1024px)');
 
-    const preventDefault = (e: Event) => e.preventDefault();
-    const options = { passive: false } as AddEventListenerOptions;
+    function applyLock(desktop: boolean) {
+      if (desktop) {
+        document.documentElement.classList.add('home-lock');
+        document.body.classList.add('home-lock');
+      } else {
+        document.documentElement.classList.remove('home-lock');
+        document.body.classList.remove('home-lock');
+      }
+    }
 
-    window.addEventListener('wheel', preventDefault, options);
-    window.addEventListener('touchmove', preventDefault, options);
-    window.addEventListener('scroll', preventDefault, options);
+    applyLock(isDesktop.matches);
+
+    const handler = (e: MediaQueryListEvent) => applyLock(e.matches);
+    isDesktop.addEventListener('change', handler);
 
     return () => {
+      isDesktop.removeEventListener('change', handler);
       document.documentElement.classList.remove('home-lock');
       document.body.classList.remove('home-lock');
-      window.removeEventListener('wheel', preventDefault);
-      window.removeEventListener('touchmove', preventDefault);
-      window.removeEventListener('scroll', preventDefault);
     };
   }, []);
 

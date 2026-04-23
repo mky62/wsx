@@ -1,9 +1,6 @@
 import { getRedisClient, isRedisConfigured } from './redisClient.js';
 import { ChatMessage } from '../types/room.js';
 import crypto from 'crypto';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || ''; // Must be 32 bytes (64 hex characters)
 // Fail closed: invalid or missing keys disable history instead of storing plaintext.
@@ -91,6 +88,7 @@ export class MessageStore {
 
         try {
             const redis = getRedisClient();
+            if (!redis) return;
             const key = this.getRoomKey(roomId);
             const messageStr = JSON.stringify(message);
             const encryptedMessage = this.encrypt(messageStr);
@@ -125,6 +123,7 @@ export class MessageStore {
 
         try {
             const redis = getRedisClient();
+            if (!redis) return [];
             const key = this.getRoomKey(roomId);
 
             // Get messages from Redis (0 to limit-1, newest first)
@@ -168,6 +167,7 @@ export class MessageStore {
 
         try {
             const redis = getRedisClient();
+            if (!redis) return;
             const key = this.getRoomKey(roomId);
             await redis.del(key);
         } catch (error) {
@@ -187,6 +187,7 @@ export class MessageStore {
 
         try {
             const redis = getRedisClient();
+            if (!redis) return false;
             const result = await redis.ping();
             return result === 'PONG';
         } catch (error) {

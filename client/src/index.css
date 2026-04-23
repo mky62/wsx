@@ -149,8 +149,10 @@
     overflow: auto !important;
 }
 
-/* ===== Strict Home Page Lock ===== */
-.home-lock {
-    overflow: hidden !important;
-    touch-action: none;
+/* ===== Strict Home Page Lock (desktop only) ===== */
+@media (min-width: 1024px) {
+    .home-lock {
+        overflow: hidden !important;
+        touch-action: none;
+    }
 }

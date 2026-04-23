@@ -144,7 +144,13 @@ func (m *RoomManager) JoinRoom(roomID, username string, socket *WSConn, particip
 	result.History = m.messageStore.GetMessages(roomID, historyMessageLimit)
 
 	m.broadcastParticipants(room)
-	m.broadcastSystem(room, fmt.Sprintf("%s %s", participant.Username, ternary(reconnected, "reconnected", "joined")))
+	var action string
+	if reconnected {
+		action = "reconnected"
+	} else {
+		action = "joined"
+	}
+	m.broadcastSystem(room, fmt.Sprintf("%s %s", participant.Username, action))
 	return result, nil
 }
 
@@ -399,11 +405,4 @@ func rateLimited(socket *WSConn) bool {
 	recent = append(recent, now)
 	socket.SetRateLimitWindow(recent)
 	return false
-}
-
-func ternary[T any](condition bool, left, right T) T {
-	if condition {
-		return left
-	}
-	return right
 }
