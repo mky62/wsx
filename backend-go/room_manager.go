@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -266,7 +267,7 @@ func (m *RoomManager) ValidateAndHandleMessage(socket *WSConn, payload sendMessa
 		return &ErrorPayload{Type: "ERROR", Code: "rate_limited", Message: "too many messages; slow down"}
 	}
 
-	text := stringsTrimSpace(payload.Text)
+	text := strings.TrimSpace(payload.Text)
 	if text == "" {
 		return nil
 	}

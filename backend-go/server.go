@@ -99,6 +99,7 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	socket.StartHeartbeat()
 	go s.serveSocket(socket)
 }
 

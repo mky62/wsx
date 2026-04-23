@@ -140,6 +140,22 @@ func (c *WSConn) SetRateLimitWindow(values []int64) {
 	c.messageTimestamps = values
 }
 
+// StartHeartbeat sends periodic pings and sets a read deadline.
+// Must be called once after the WebSocket handshake completes.
+func (c *WSConn) StartHeartbeat() {
+	_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
+
+	go func() {
+		ticker := time.NewTicker(pingInterval)
+		defer ticker.Stop()
+		for range ticker.C {
+			if err := c.writeFrame(opcodePing, nil); err != nil {
+				return
+			}
+		}
+	}()
+}
+
 func (c *WSConn) ReadJSON(v any, maxPayload int64) error {
 	for {
 		opcode, payload, err := c.readFrame(maxPayload)
@@ -158,6 +174,7 @@ func (c *WSConn) ReadJSON(v any, maxPayload int64) error {
 			_ = c.writeClose(closeNormalClosure, "")
 			return io.EOF
 		case opcodePong:
+			_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
 			continue
 		default:
 			return fmt.Errorf("unsupported websocket opcode %d", opcode)

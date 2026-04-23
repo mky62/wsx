@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -125,7 +126,7 @@ func (s *MessageStore) GetMessages(roomID string, limit int) []ChatMessage {
 		out = append(out, msg)
 	}
 
-	slicesReverse(out)
+	slices.Reverse(out)
 	return out
 }
 
@@ -235,10 +236,4 @@ func validReconnectToken(participant *ParticipantRecord, reconnectToken string) 
 		return false
 	}
 	return subtle.ConstantTimeCompare(left, right) == 1
-}
-
-func slicesReverse(values []ChatMessage) {
-	for i, j := 0, len(values)-1; i < j; i, j = i+1, j-1 {
-		values[i], values[j] = values[j], values[i]
-	}
 }
