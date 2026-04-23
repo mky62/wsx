@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -21,6 +22,8 @@ const (
 	opcodePing         = 0x9
 	opcodePong         = 0xA
 	closeNormalClosure = 1000
+	pingInterval       = 30 * time.Second
+	pongWait           = 40 * time.Second
 )
 
 type WSConn struct {
