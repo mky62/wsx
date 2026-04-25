@@ -11,7 +11,6 @@ export function handleConnection(ws: WebSocket) {
   socket.roomId = null;
   socket.participantId = null;
   socket.username = null;
-  socket.messageTimestamps = [];
 
   let pongTimeout: ReturnType<typeof setTimeout> | null = null;
   let pingInterval: ReturnType<typeof setInterval> | null = null;

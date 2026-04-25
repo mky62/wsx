@@ -7,6 +7,8 @@ import RoomMembersPanel from "../components/chat/RoomMembersPanel";
 import SystemMessage from "../components/chat/SystemMessage";
 import { chatReducer } from "../state/chatReducer";
 import { useChatSocket } from "../hooks/useChatSocket";
+import { getApiBaseUrl } from "../utils/api";
+import type { ImageChatMessage } from "../state/chatReducer";
 import type { ChatSocketMessage, ParticipantView } from "../hooks/useChatSocket";
 
 interface LocationState {
@@ -37,7 +39,65 @@ function readStoredSession(roomId: string): StoredChatSession | null {
   }
 }
 
+function getStoredImageKey(roomId: string): string {
+  return `chat_images_${roomId}`;
+}
+
+function readStoredImages(roomId: string): ImageChatMessage[] {
+  try {
+    const stored = sessionStorage.getItem(getStoredImageKey(roomId));
+    if (!stored) return [];
+
+    const parsed = JSON.parse(stored) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(isStoredImageMessage);
+  } catch {
+    return [];
+  }
+}
+
+function writeStoredImage(roomId: string, message: ImageChatMessage): void {
+  try {
+    const current = readStoredImages(roomId).filter((stored) => stored.id !== message.id);
+    const next = [...current, message].sort((a, b) => a.timestamp - b.timestamp);
+    sessionStorage.setItem(getStoredImageKey(roomId), JSON.stringify(next));
+  } catch {
+    // sessionStorage quota is browser-defined; live delivery still works if caching fails.
+  }
+}
+
+function isStoredImageMessage(value: unknown): value is ImageChatMessage {
+  if (!value || typeof value !== "object") return false;
+  const message = value as Partial<ImageChatMessage>;
+  return message.type === "MESSAGE_CREATED"
+    && message.contentType === "image"
+    && typeof message.id === "string"
+    && typeof message.participantId === "string"
+    && typeof message.username === "string"
+    && typeof message.timestamp === "number"
+    && Boolean(message.image)
+    && typeof message.image?.id === "string"
+    && typeof message.image?.dataUrl === "string";
+}
+
+async function fetchImageDataUrl(imageUrl: string): Promise<string> {
+  const response = await fetch(`${getApiBaseUrl()}${imageUrl}`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("image unavailable");
+  }
+
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 function ChatView() {
+  const viewportStyle = useLockedVisualViewport();
   const [messages, dispatch] = useReducer(chatReducer, []);
   const [participants, setParticipants] = useState<ParticipantView[]>([]);
   const [joinConfirmed, setJoinConfirmed] = useState<boolean>(false);
@@ -108,6 +168,9 @@ function ChatView() {
         if (data.history && Array.isArray(data.history)) {
           dispatch({ type: "SET_HISTORY", payload: data.history });
         }
+        for (const imageMessage of readStoredImages(roomId)) {
+          dispatch({ type: "UPDATE_MESSAGE", payload: imageMessage });
+        }
         setJoinConfirmed(true);
         return;
       }
@@ -131,6 +194,27 @@ function ChatView() {
       }
 
       if (data.type === "MESSAGE_CREATED") {
+        if (data.contentType === "image") {
+          dispatch({ type: "ADD_MESSAGE", payload: data });
+
+          void fetchImageDataUrl(data.image.url)
+            .then((dataUrl) => {
+              const cachedMessage: ImageChatMessage = {
+                ...data,
+                image: {
+                  ...data.image,
+                  dataUrl,
+                },
+              };
+              writeStoredImage(roomId, cachedMessage);
+              dispatch({ type: "UPDATE_MESSAGE", payload: cachedMessage });
+            })
+            .catch(() => {
+              // The message can still render via the direct fetch fallback while the server TTL is active.
+            });
+          return;
+        }
+
         dispatch({ type: "ADD_MESSAGE", payload: data });
       }
     },
@@ -146,11 +230,15 @@ function ChatView() {
       socketRef.current.close(1000, "Intentional leave");
     }
     sessionStorage.removeItem(`chat_session_${roomId}`);
+    sessionStorage.removeItem(getStoredImageKey(roomId));
     navigate("/", { replace: true });
   };
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden">
+    <div
+      className="fixed inset-x-0 top-0 w-full overflow-hidden bg-neutral-950"
+      style={viewportStyle}
+    >
       <div className="absolute inset-0 bg-cover bg-center bg-[#cfa913] bg-[linear-gradient(15deg,rgba(207,169,19,0.99)_6%,rgba(0,181,157,0.95)_100%)]" />
       <div className="absolute inset-0 bg-black/40" />
 
@@ -193,6 +281,9 @@ function ChatView() {
         <ChatBottom
           socketRef={socketRef}
           isConnected={isConnected && joinConfirmed}
+          roomId={roomId}
+          participantId={session.participantId}
+          reconnectToken={session.reconnectToken}
         />
       </div>
 
@@ -203,6 +294,54 @@ function ChatView() {
       />
     </div>
   );
+}
+
+function useLockedVisualViewport(): React.CSSProperties {
+  const [viewport, setViewport] = useState(() => getVisualViewportSize());
+
+  useEffect(() => {
+    const updateViewport = (): void => {
+      setViewport(getVisualViewportSize());
+    };
+
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyPosition = document.body.style.position;
+    const previousBodyWidth = document.body.style.width;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    window.visualViewport?.addEventListener("resize", updateViewport);
+    window.visualViewport?.addEventListener("scroll", updateViewport);
+
+    return () => {
+      window.removeEventListener("resize", updateViewport);
+      window.visualViewport?.removeEventListener("resize", updateViewport);
+      window.visualViewport?.removeEventListener("scroll", updateViewport);
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.position = previousBodyPosition;
+      document.body.style.width = previousBodyWidth;
+    };
+  }, []);
+
+  return {
+    height: `${viewport.height}px`,
+    transform: `translateY(${viewport.offsetTop}px)`,
+  };
+}
+
+function getVisualViewportSize(): { height: number; offsetTop: number } {
+  const visualViewport = window.visualViewport;
+  return {
+    height: Math.round(visualViewport?.height ?? window.innerHeight),
+    offsetTop: Math.round(visualViewport?.offsetTop ?? 0),
+  };
 }
 
 export default ChatView;

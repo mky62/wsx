@@ -64,4 +64,5 @@ export async function handleJoin(ws: CustomWebSocket, payload: JoinPayload): Pro
         type: "JOINED",
         ...result
     });
+    roomManager.finalizeJoin(result.roomId, result.username, result.reconnected);
 }

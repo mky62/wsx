@@ -6,7 +6,6 @@ export interface CustomWebSocket extends WebSocket {
     username: string | null;
     intentionalLeave?: boolean;
     replaced?: boolean;
-    messageTimestamps: number[];
 }
 
 export interface ParticipantView {
@@ -19,6 +18,7 @@ export interface ParticipantView {
 export interface ParticipantRecord extends ParticipantView {
     reconnectTokenHash: string;
     socket: CustomWebSocket | null;
+    messageTimestamps: number[];
 }
 
 export interface DisconnectedUserInfo {
@@ -26,14 +26,36 @@ export interface DisconnectedUserInfo {
     timer: NodeJS.Timeout;
 }
 
-export interface ChatMessage {
+export interface TextChatMessage {
     id: string;
     type: "MESSAGE_CREATED";
     participantId: string;
     username: string;
+    contentType?: "text";
     text: string;
     timestamp: number;
 }
+
+export interface ImageChatMessage {
+    id: string;
+    type: "MESSAGE_CREATED";
+    participantId: string;
+    username: string;
+    contentType: "image";
+    image: {
+        id: string;
+        token: string;
+        url: string;
+        mimeType: string;
+        sizeBytes: number;
+        width?: number;
+        height?: number;
+        expiresAt: number;
+    };
+    timestamp: number;
+}
+
+export type ChatMessage = TextChatMessage | ImageChatMessage;
 
 export type ServerPayload =
     | {
@@ -44,7 +66,7 @@ export type ServerPayload =
         username: string;
         participants: ParticipantView[];
         userCount: number;
-        history: ChatMessage[];
+        history: TextChatMessage[];
         reconnected: boolean;
         historyEnabled: boolean;
     }
