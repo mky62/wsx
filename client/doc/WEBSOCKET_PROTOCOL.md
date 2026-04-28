@@ -151,7 +151,7 @@ Join or rejoin a chat room.
 
 ### SEND_MESSAGE
 
-Send a chat message to the room.
+Send a text chat message to the room. Image bytes are not sent through this WebSocket message; see ephemeral image upload below.
 
 **Request:**
 ```json
@@ -180,6 +180,7 @@ Send a chat message to the room.
   "id": "msg-uuid-v4",
   "participantId": "xyz789abc123",
   "username": "Echo_01",
+  "contentType": "text",
   "text": "Hello world",
   "timestamp": 1713987600000
 }
@@ -201,6 +202,53 @@ Send a chat message to the room.
 | `rate_limited` | Too many messages (20 / 10s) |
 | `message_too_long` | Message exceeds 1000 characters |
 | `handler_failed` | Server error processing message |
+
+### Ephemeral Image Upload
+
+Send an image to currently connected room participants without storing it in Redis history.
+
+**Request:**
+```http
+POST /rooms/{roomId}/images
+Content-Type: image/png
+X-Participant-Id: xyz789abc123
+X-Reconnect-Token: random-32-char-token
+X-Image-Width: 640
+X-Image-Height: 480
+
+<raw image bytes>
+```
+
+**Validation Rules:**
+- Participant must be actively connected to the room
+- Reconnect token must match the active participant
+- Allowed MIME types: `image/jpeg`, `image/png`, `image/webp`
+- Maximum size: 5 MB
+- Images are kept only in server memory for a short TTL and are not written to Redis
+
+**Server Broadcast (MESSAGE_CREATED):**
+```json
+{
+  "type": "MESSAGE_CREATED",
+  "id": "msg-uuid-v4",
+  "participantId": "xyz789abc123",
+  "username": "Echo_01",
+  "contentType": "image",
+  "image": {
+    "id": "image-id",
+    "token": "unguessable-download-token",
+    "url": "/rooms/abc123xyz9/images/image-id?token=unguessable-download-token",
+    "mimeType": "image/png",
+    "sizeBytes": 123456,
+    "width": 640,
+    "height": 480,
+    "expiresAt": 1713987720000
+  },
+  "timestamp": 1713987600000
+}
+```
+
+Clients fetch `image.url` immediately over HTTP, convert the response to a data URL, and keep the image message in room-scoped `sessionStorage` so it survives reloads in the same tab. The browser clears that cache when the tab session ends, and explicit room leave removes it immediately.
 
 ### LEAVE_ROOM
 
@@ -274,7 +322,7 @@ Sent after successful room join or reconnection.
 
 ### MESSAGE_CREATED
 
-Broadcast when any participant sends a message.
+Broadcast when any participant sends a text message or ephemeral image.
 
 ```json
 {
@@ -282,6 +330,7 @@ Broadcast when any participant sends a message.
   "id": "msg-uuid-v4",
   "participantId": "xyz789abc123",
   "username": "Echo_01",
+  "contentType": "text",
   "text": "Hello world",
   "timestamp": 1713987600000
 }
@@ -294,7 +343,9 @@ Broadcast when any participant sends a message.
 | `id` | string | Unique message ID (UUID v4) |
 | `participantId` | string | Sender's participant ID |
 | `username` | string | Sender's username |
-| `text` | string | Message content |
+| `contentType` | string | `"text"` or `"image"` |
+| `text` | string | Text content when `contentType` is `"text"` |
+| `image` | object | Ephemeral image metadata when `contentType` is `"image"` |
 | `timestamp` | number | Unix timestamp (milliseconds) |
 
 **Client Handling:**

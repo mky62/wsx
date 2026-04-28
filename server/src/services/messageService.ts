@@ -1,5 +1,5 @@
 import { getRedisClient, isRedisConfigured } from './redisClient.js';
-import { ChatMessage } from '../types/room.js';
+import { TextChatMessage } from '../types/room.js';
 import crypto from 'crypto';
 
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || ''; // Must be 32 bytes (64 hex characters)
@@ -80,7 +80,7 @@ export class MessageStore {
      */
     async saveMessage(
         roomId: string,
-        message: ChatMessage
+        message: TextChatMessage
     ): Promise<void> {
         if (!this.isEnabled) {
             return;
@@ -116,7 +116,7 @@ export class MessageStore {
     async getMessages(
         roomId: string,
         limit: number = MESSAGE_LIMIT
-    ): Promise<ChatMessage[]> {
+    ): Promise<TextChatMessage[]> {
         if (!this.isEnabled) {
             return [];
         }
@@ -146,7 +146,7 @@ export class MessageStore {
                         return null;
                     }
                 })
-                .filter((msg): msg is ChatMessage => isChatMessage(msg))
+                .filter((msg): msg is TextChatMessage => isChatMessage(msg))
                 .reverse();
         } catch (error) {
             if (process.env.DEBUG) {
@@ -199,9 +199,9 @@ export class MessageStore {
     }
 }
 
-function isChatMessage(value: unknown): value is ChatMessage {
+function isChatMessage(value: unknown): value is TextChatMessage {
     if (!value || typeof value !== "object") return false;
-    const msg = value as Partial<ChatMessage>;
+    const msg = value as Partial<TextChatMessage>;
     return msg.type === "MESSAGE_CREATED"
         && typeof msg.id === "string"
         && typeof msg.participantId === "string"

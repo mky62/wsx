@@ -1,13 +1,9 @@
-import React from "react";
-
-interface Message {
-  username: string;
-  text: string;
-  timestamp: number;
-}
+import React, { useEffect, useState } from "react";
+import type { ChatMessage, ImageChatMessage } from "../../state/chatReducer";
+import { getApiBaseUrl } from "../../utils/api";
 
 interface MessageBubbleProps {
-  message: Message;
+  message: ChatMessage;
   isSelf: boolean;
 }
 
@@ -36,10 +32,84 @@ const MessageBubble = React.memo(function MessageBubble({
           </time>
         </div>
 
-        <p className="break-words text-sm leading-5 sm:text-[15px]">{message.text}</p>
+        {message.contentType === "image" ? (
+          <EphemeralImage image={message.image} />
+        ) : (
+          <p className="break-words text-sm leading-5 sm:text-[15px]">{message.text}</p>
+        )}
       </div>
     </div>
   );
 });
+
+function EphemeralImage({ image }: { image: ImageChatMessage["image"] }) {
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (image.dataUrl) {
+      setObjectUrl(null);
+      setFailed(false);
+      return;
+    }
+
+    let cancelled = false;
+    let createdUrl: string | null = null;
+
+    async function loadImage() {
+      setFailed(false);
+      setObjectUrl(null);
+
+      try {
+        const response = await fetch(`${getApiBaseUrl()}${image.url}`, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("image unavailable");
+        }
+
+        const blob = await response.blob();
+        createdUrl = URL.createObjectURL(blob);
+        if (cancelled) {
+          URL.revokeObjectURL(createdUrl);
+          return;
+        }
+
+        setObjectUrl(createdUrl);
+      } catch {
+        if (!cancelled) {
+          setFailed(true);
+        }
+      }
+    }
+
+    void loadImage();
+
+    return () => {
+      cancelled = true;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
+    };
+  }, [image.dataUrl, image.url]);
+
+  if (failed) {
+    return <div className="text-sm opacity-80">Image expired</div>;
+  }
+
+  const imageSrc = image.dataUrl || objectUrl;
+
+  if (!imageSrc) {
+    return <div className="h-36 w-56 animate-pulse rounded-md bg-black/15" />;
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt="Shared"
+      width={image.width}
+      height={image.height}
+      className="max-h-72 max-w-full rounded-md object-contain"
+    />
+  );
+}
 
 export default MessageBubble;
