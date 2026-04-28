@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import { ArrowLeft } from "lucide-react";
-import { DocsOverviewMap, MessageFlowMap, RecoveryFlowMap, SystemDesignMap } from "../components/docs/DocMaps";
+import { MessageFlowMap, RecoveryFlowMap, SystemDesignMap } from "../components/docs/DocMaps";
 import { ShineBorder } from "../components/ui/ShineBorder";
 
 const docs = [
@@ -17,12 +17,6 @@ const docs = [
 
 type DocEntry = (typeof docs)[number];
 const maps = [
-  {
-    id: "DOCS_MAP",
-    title: "Docs Map",
-    description: "High-level map of the documentation set and what each page covers.",
-    kind: "map",
-  },
   {
     id: "SYSTEM_DESIGN_MAP",
     title: "System Design Map",
@@ -199,7 +193,6 @@ function MapPage({ entry, theme }: { entry: MapEntry; theme: Theme }) {
     <div className="mt-2 w-full">
       <h1 className={`mt-0 mb-4 text-3xl font-semibold tracking-tight sm:text-4xl ${dark ? "text-white" : "text-black"}`}>{entry.title}</h1>
       <p className={`my-4 w-full leading-7 ${dark ? "text-white/75" : "text-black/75"}`}>{entry.description}</p>
-      {entry.id === "DOCS_MAP" && <DocsOverviewMap theme={theme} />}
       {entry.id === "SYSTEM_DESIGN_MAP" && <SystemDesignMap theme={theme} />}
       {entry.id === "MESSAGE_FLOW_MAP" && <MessageFlowMap theme={theme} />}
       {entry.id === "RECOVERY_FLOW_MAP" && <RecoveryFlowMap theme={theme} />}

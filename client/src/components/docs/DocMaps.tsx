@@ -36,39 +36,6 @@ function DiagramShell({
   );
 }
 
-const docsMapChart = String.raw`
-mindmap
-  root((wsx Docs))
-    Overview
-      Quick start
-      Feature summary
-      Entry points
-    Architecture
-      Frontend structure
-      Backend parity
-      Security model
-      Data flow
-    API Reference
-      HTTP routes
-      Request contracts
-      Response payloads
-    WebSocket Protocol
-      JOIN_ROOM
-      SEND_MESSAGE
-      LEAVE_ROOM
-      Server events
-      Heartbeat
-    Setup Guide
-      Install
-      Environment
-      Local workflow
-      Troubleshooting
-    Deployment
-      Production config
-      Build + hosting
-      Security checklist
-`;
-
 const systemDesignChart = String.raw`
 flowchart LR
     subgraph Browser["React Client"]
@@ -143,16 +110,7 @@ sequenceDiagram
     end
 `;
 
-export function DocsOverviewMap({ theme }: MapProps) {
-  return (
-    <DiagramShell
-      theme={theme}
-      title="Docs Map"
-      caption="High-level reading map for the documentation set. This is the structural view: what each page owns and the order in which the docs make the most sense."
-      chart={docsMapChart}
-    />
-  );
-}
+
 
 export function SystemDesignMap({ theme }: MapProps) {
   return (
