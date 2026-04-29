@@ -5,14 +5,20 @@ import type { Components } from "react-markdown";
 import { ArrowLeft } from "lucide-react";
 import { MessageFlowMap, RecoveryFlowMap, SystemDesignMap } from "../components/docs/DocMaps";
 import { ShineBorder } from "../components/ui/ShineBorder";
+import apiContent from "../../doc/API.md?raw";
+import architectureContent from "../../doc/ARCHITECTURE.md?raw";
+import deploymentContent from "../../doc/DEPLOYMENT.md?raw";
+import overviewContent from "../../doc/README.md?raw";
+import setupContent from "../../doc/SETUP.md?raw";
+import websocketContent from "../../doc/WEBSOCKET_PROTOCOL.md?raw";
 
 const docs = [
-  { id: "README", title: "Overview", file: "/doc/README.md", kind: "doc" },
-  { id: "ARCHITECTURE", title: "Architecture", file: "/doc/ARCHITECTURE.md", kind: "doc" },
-  { id: "API", title: "API Reference", file: "/doc/API.md", kind: "doc" },
-  { id: "WEBSOCKET", title: "WebSocket Protocol", file: "/doc/WEBSOCKET_PROTOCOL.md", kind: "doc" },
-  { id: "SETUP", title: "Setup Guide", file: "/doc/SETUP.md", kind: "doc" },
-  { id: "DEPLOYMENT", title: "Deployment", file: "/doc/DEPLOYMENT.md", kind: "doc" },
+  { id: "README", title: "Overview", file: "/doc/README.md", content: overviewContent, kind: "doc" },
+  { id: "ARCHITECTURE", title: "Architecture", file: "/doc/ARCHITECTURE.md", content: architectureContent, kind: "doc" },
+  { id: "API", title: "API Reference", file: "/doc/API.md", content: apiContent, kind: "doc" },
+  { id: "WEBSOCKET", title: "WebSocket Protocol", file: "/doc/WEBSOCKET_PROTOCOL.md", content: websocketContent, kind: "doc" },
+  { id: "SETUP", title: "Setup Guide", file: "/doc/SETUP.md", content: setupContent, kind: "doc" },
+  { id: "DEPLOYMENT", title: "Deployment", file: "/doc/DEPLOYMENT.md", content: deploymentContent, kind: "doc" },
 ] as const;
 
 type DocEntry = (typeof docs)[number];
@@ -238,31 +244,9 @@ export default function Docs() {
       return;
     }
 
-    let active = true;
-
-    fetch(selectedEntry.file)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Failed to load ${selectedEntry.title}`);
-        }
-        return res.text();
-      })
-      .then((text) => {
-        if (active) setContent(text);
-      })
-      .catch((err: unknown) => {
-        if (active) {
-          setContent("");
-          setError(err instanceof Error ? err.message : "Failed to load documentation");
-        }
-      })
-      .finally(() => {
-        if (active) setIsLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
+    setContent(selectedEntry.content);
+    setError(null);
+    setIsLoading(false);
   }, [selectedEntry]);
 
   useEffect(() => {
