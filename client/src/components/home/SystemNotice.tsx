@@ -25,7 +25,7 @@ export function SystemNotice({ variant = "default" }: SystemNoticeProps) {
         system notice
       </div>
       <p className="max-w-sm text-xl">
-        Recent messages stay encrypted for reloads and connection breaks.
+        Hello messages stay encrypted for reloads and connection breaks.
       </p>
       <p className="mt-3 max-w-sm text-sm text-white/70">
         Rooms disappear after everyone leaves or reconnect grace ends.
