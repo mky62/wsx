@@ -10,7 +10,7 @@ export function SystemNotice({ variant = "default" }: SystemNoticeProps) {
           system notice
         </div>
         <p className="mt-2 text-base text-black">
-          Recent messages stay encrypted for reloads and short connection breaks.
+          Hello | messages stay encrypted for reloads and short connection breaks.
         </p>
         <p className="mt-2 text-sm text-black/65">
           Rooms disappear after everyone leaves or reconnect grace ends.
