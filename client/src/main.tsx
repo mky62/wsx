@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
+import { registerServiceWorker } from './serviceWorkerRegistration';
 
 // Handle SPA fallback redirect from 404.html
 const redirect = sessionStorage.getItem('redirect');
@@ -24,3 +25,5 @@ createRoot(rootElement).render(
     </BrowserRouter>
   </StrictMode>
 );
+
+registerServiceWorker();

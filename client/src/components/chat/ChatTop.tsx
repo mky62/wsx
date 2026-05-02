@@ -8,7 +8,7 @@ interface ChatTopProps {
   onLeave: () => void;
 }
 
-function ChatTop({ roomId, userCount: _userCount, onViewMembers, onLeave }: ChatTopProps) {
+function ChatTop({ roomId, userCount, onViewMembers, onLeave }: ChatTopProps) {
   const [copied, setCopied] = useState<boolean>(false);
 
   const copyRoomId = async (): Promise<void> => {
@@ -49,8 +49,8 @@ function ChatTop({ roomId, userCount: _userCount, onViewMembers, onLeave }: Chat
         <button
           onClick={onViewMembers}
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-600/55 text-slate-100 transition-colors hover:bg-slate-800/80"
-          aria-label="View members"
-          title="Members"
+          aria-label={`View ${userCount} room member${userCount === 1 ? "" : "s"}`}
+          title={`${userCount} member${userCount === 1 ? "" : "s"}`}
         >
           <Users size={16} />
         </button>
