@@ -29,7 +29,7 @@ export function Header({ phase }: HeaderProps) {
           className="flex h-8 w-8 items-center justify-center border border-black/15 bg-[#f0efe9] text-[#6b6b6b] hover:border-black hover:bg-black hover:text-[#f7f6f2] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all"
           aria-label="View documentation"
         >
-
+          <FileText size={16} />
         </button>
       </div>
     </div>
